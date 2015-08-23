@@ -1,0 +1,49 @@
+import(lmerTest)
+importFrom(lme4, VarCorr, fixef, isGLMM, isLMM, getME)
+if(getRversion() >= "3.3.0") {
+    importFrom("stats", sigma)
+}else{
+    importFrom("lme4", sigma)
+}
+
+import(Hmisc)
+importFrom("graphics", plot)
+#importFrom(gplots, barplot2)
+importFrom(xtable, xtable)
+importFrom(plyr, llply)
+import(methods)
+import(parallel)
+#import(plyr)
+import(doBy)
+import(shiny)
+#import(xtable)
+import(reshape2)
+import(ggplot2)
+#import(googleVis)
+importFrom(shinyBS, bsPopover)
+importFrom("grDevices", "gray.colors")
+importFrom("stats", "as.formula", "ave", "delete.response", "formula",
+             "lm", "model.frame", "model.matrix", "pf", "predict",
+             "printCoefmat", "pt", "qnorm", "qt", "replications",
+             "terms", "terms.formula", "uniroot", "update",
+             "update.formula")
+importFrom("utils", "combn")
+
+export(sensmixed)
+export(consmixed)
+export(saveToDoc)
+export(SensMixedUI)
+#exportClasses(sensmixed)
+#exportClasses(consmixed)
+export(convertToFactors)
+export(plotLSMEANS)
+
+
+S3method(print, sensmixed)
+S3method(plot, sensmixed)
+S3method(print, consmixed)
+S3method(plot, consmixed)
+
+
+
+

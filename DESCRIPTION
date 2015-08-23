@@ -1,0 +1,29 @@
+Package: SensMixed
+Type: Package
+Title: Analysis of Sensory and Consumer Data in a Mixed Model Framework
+Version: 2.0-8
+Authors@R: c(person("Alexandra", "Kuznetsova", role = c("aut", "cre"),
+                          email = "alku@dtu.dk"),
+                   person("Per", "Bruun Brockhoff", role = c("aut", "ths")),
+                   person("Rune", "Haubo Bojesen Christensen", role = "aut"))
+Maintainer: Alexandra Kuznetsova <alku@dtu.dk>
+Depends: stats, methods, lmerTest
+Imports: Hmisc, parallel, plyr, doBy, xtable, reshape2, ggplot2, shiny,
+        shinyBS, lme4
+Suggests: pbkrtest
+Description: Functions that facilitate analysis of 
+              Sensory as well as Consumer data within a mixed effects model 
+              framework are provided. The so-called mixed assessor models, 
+              that correct for the scaling effect are implemented.
+              The generation of the d-tilde plots forms part of the package.
+              The shiny application for the  functionalities 
+              forms part of the package.
+LazyData: TRUE
+License: GPL (>= 2)
+Repository: CRAN
+NeedsCompilation: no
+Packaged: 2015-08-23 13:56:13 UTC; alku
+Author: Alexandra Kuznetsova [aut, cre],
+  Per Bruun Brockhoff [aut, ths],
+  Rune Haubo Bojesen Christensen [aut]
+Date/Publication: 2015-08-23 17:36:22

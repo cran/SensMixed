@@ -1,0 +1,8 @@
+1. Create action button to navgate to TabPanle Modelling controls
+3. Ste the progress bar in the middle of the screen and freeze all the components
+5. Include a tab how to make a reference
+
+# Call the recover function when an error occurs
+options(error = recover)
+
+6. Ask Per regarding the theme of the app (using shinythemes)
