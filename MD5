@@ -1,5 +1,6 @@
-48ebbed376c2c968be616a0806e07d2b *DESCRIPTION
+09b2c7952793fd31d0adaea036a9789c *DESCRIPTION
 9461814751f26c9178c99c2fd6f44a6d *NAMESPACE
+9a872b1206bd5ce838dc85ef024d91bb *NEWS
 7cb307a95523d3063a89e2f68265e569 *R/MAManalysis_ver4.R
 1377ad91cb0d919e83834b358a6b9c6e *R/classDefinition_SensMixed.R
 a473983787165c7e9524eff52302baf8 *R/consmixedFun.r
@@ -11,7 +12,7 @@ e9d05d93fc87ecba2926f31d60818358 *R/initSensCons.R
 d002c245951ccb5e42bd3931e08e40c6 *R/internal_SensMixed.R
 56f17fb70ad73b80cd7ba54b8fa36b2a *R/lsmeans.R
 eeaef170e97f094e6edc15c7a99b4bf8 *R/lsmeansFunctions.R
-ac2f0039f08f85d695aa078c62d477b9 *R/outputTools.R
+8d25e4a07ede0aa1039eb9e8e62d5695 *R/outputTools.R
 f5ff54e44cad1b8d4ec8dde75c7c701c *R/plotSensMixed.R
 5e52f9d55d66af4dc0a67cd3a55ea12d *R/sensmixedFun.R
 ec3e430ac06d0e5fa293b6a3d64ec346 *R/sensmixedFunParallel.R
@@ -30,10 +31,10 @@ cc08ec007d17914b62b9bf111c6f8f1f *inst/sensmixedUI/data/output.doc
 711f97cad2adb09dd0cc81b2c17dabbd *inst/sensmixedUI/data/senscherry.txt
 9a91a79587fb24a56e007d3d01dcf8fb *inst/sensmixedUI/global.R
 da8e9f8ccb51beed851d43b3f603e8dd *inst/sensmixedUI/posthocUtils.R
-cd2954fae8cf77abb8f5b7f7e7029d23 *inst/sensmixedUI/runAnalysis.R
+1d2efffe091da7bbb29f7252de4051db *inst/sensmixedUI/runAnalysis.R
 cb842ba153c0fe9484ef406c75866dab *inst/sensmixedUI/sensmixedPlot1.pdf
-b6a1871462dc09c4b31d25a145d2e390 *inst/sensmixedUI/server.R
-71deab5e4be950b598c851d1b46fcbec *inst/sensmixedUI/serverUI.R
+48196ce1cad288b7b3f41f78719914b2 *inst/sensmixedUI/server.R
+1681a331bec9538137fd6ad34e175da0 *inst/sensmixedUI/serverUI.R
 7c67381f7f2b77795d6fdcd175cb9e86 *inst/sensmixedUI/shinyapps/sensmixed/sensmixed.dcf
 6c7342352f3b170b183a456aae318bad *inst/sensmixedUI/stepUtils.R
 b72468c06c05da372b67b7795a101ed0 *inst/sensmixedUI/ui.R
@@ -55,7 +56,7 @@ f5202962f1dd9b6d6a30573b70e0d810 *man/plot.consmixed.Rd
 3a2db3db1927642433d934642252ed64 *man/plotLSMEANS.Rd
 3743e0238860eb5c3ec508fdc3c7300e *man/saveToDoc.Rd
 33c62cf3b5eebcba94f0d5f69856d1c4 *man/sensmixed.Rd
-d4569de7bbaee623ce2de0c53ed3298f *tests/Examples/SensMixed-Ex.Rout.save
+8f33b5b2cc1c29e094c452b6deff1026 *tests/Examples/SensMixed-Ex.Rout.save
 572bdfb9b124fc6bd24c8e2b256f8750 *tests/bugBO.R
 37da79288e2b987e22a8ddc987073535 *tests/bugKEEPdprime.R
 95568b1210b0075ad5267d4ad698d872 *tests/testDprimes.R

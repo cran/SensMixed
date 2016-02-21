@@ -121,8 +121,9 @@ change.inter.symbol <- function(x, interact.symbol){
           axis.title.x=element_blank(), 
           axis.title.y = element_text(size = rel(1.4)), 
           axis.text = element_text(size = rel(1)), 
-          legend.text = element_text(size = rel(1)), 
-          legend.title = element_text(size = rel(1)))  + 
+          #legend.text = element_text(size = rel(1)), 
+          #legend.title = element_text(size = rel(1)))  +
+          legend.position = "none") +
     scale_fill_manual(values  = c(  "NS" = "grey", "p-value < 0.01" = "orange", 
                                     "p-value < 0.05" = "yellow", 
                                     "p-value < 0.001" = "red"), 
@@ -130,8 +131,8 @@ change.inter.symbol <- function(x, interact.symbol){
   
   if(!mult)
     return(p1 + geom_point(aes(shape = effs), fill = NA, 
-                           position = position_dodge(width = 0.9, height = 10), 
-                           vjust=-0.25, size = rel(5)) + 
+                           position = position_dodge(width = 0.9), 
+                           size = rel(5)) + 
              scale_shape_manual(values = initialShapes, name = "Effects"))
   else
     return(p1 + facet_wrap( ~ effs, as.table = FALSE))    

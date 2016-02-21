@@ -216,7 +216,8 @@ shinyServer(function(input, output, session) {
     resposthoc[ , "Pval"] <- 
       format.pval(resposthoc[, "Pval"], digits=3, eps=1e-3)
     resposthoc <- xtable(resposthoc, align = 
-                           paste(c("l", rep("l", ncol(resposthoc))), collapse = ""), 
+                           paste(c("l", rep("l", ncol(resposthoc))), 
+                                 collapse = ""), 
                          display= c("s",rep("f", ncol(resposthoc))))
     caption(resposthoc) <- paste(" Pairwise product differences")
     print(resposthoc, caption.placement="top", table.placement="H", 

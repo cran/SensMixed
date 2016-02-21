@@ -1,6 +1,6 @@
 
-R Under development (unstable) (2015-08-22 r69160) -- "Unsuffered Consequences"
-Copyright (C) 2015 The R Foundation for Statistical Computing
+R Under development (unstable) (2016-02-19 r70190) -- "Unsuffered Consequences"
+Copyright (C) 2016 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -237,14 +237,12 @@ lme4::lmer(formula = Liking ~ Product + (1 | Product:Consumer) +
 > plot(res)
 Using effs, effs_short, abbreffs as id variables
 Using effs as id variables
-ymax not defined: adjusting position using y instead
 > plot(res, mult = TRUE)
 Using effs, effs_short, abbreffs as id variables
 Using effs as id variables
 > plot(res, interact.symbol = " x ")
 Using effs, effs_short, abbreffs as id variables
 Using effs as id variables
-ymax not defined: adjusting position using y instead
 > 
 > 
 > 
@@ -329,7 +327,7 @@ TVset         16.10851      5.582796
 
 $pvalueF
       Coloursaturation Colourbalance
-TVset      0.002402584    0.03551977
+TVset      0.002402567    0.03551981
 
 > 
 > ## Not run: 
@@ -346,7 +344,7 @@ TVset      0.002402584    0.03551977
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  7.19 0.16 7.47 NA NA 
+Time elapsed:  8.72 0.23 9.04 NA NA 
 > grDevices::dev.off()
 null device 
           1 

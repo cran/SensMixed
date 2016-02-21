@@ -1,7 +1,7 @@
 Package: SensMixed
 Type: Package
 Title: Analysis of Sensory and Consumer Data in a Mixed Model Framework
-Version: 2.0-8
+Version: 2.0-9
 Authors@R: c(person("Alexandra", "Kuznetsova", role = c("aut", "cre"),
                           email = "alku@dtu.dk"),
                    person("Per", "Bruun Brockhoff", role = c("aut", "ths")),
@@ -22,8 +22,8 @@ LazyData: TRUE
 License: GPL (>= 2)
 Repository: CRAN
 NeedsCompilation: no
-Packaged: 2015-08-23 13:56:13 UTC; alku
+Packaged: 2016-02-20 22:30:50 UTC; alku
 Author: Alexandra Kuznetsova [aut, cre],
   Per Bruun Brockhoff [aut, ths],
   Rune Haubo Bojesen Christensen [aut]
-Date/Publication: 2015-08-23 17:36:22
+Date/Publication: 2016-02-21 09:06:42

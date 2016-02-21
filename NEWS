@@ -1,0 +1,5 @@
+2.0-9 changes:
+- fixed plots in order to pass check (due to new version of ggplot2)
+
+
+

@@ -42,7 +42,7 @@ if(input$analysis == "Consumer data"){
                                                     input$Assessors, sep = ":"), 
                                               input$Assessors),
                                             parallel = FALSE, 
-                                            mult.scaling = FALSE, #as.logical(input$multMAM),
+                                            as.logical(input$multMAM),
                                             oneway_rand = FALSE)},#as.logical(input$oneway_rand))}, 
                                  error = function(e) { NULL })
                  if(as.logical(input$MAM) == TRUE){

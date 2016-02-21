@@ -91,7 +91,7 @@ tabPanel.model <- function(){
                                    "2-WAY" = "2-WAY", 
                                    "3-WAY" = "3-WAY")),
 
-                     bsPopover("errstruct", paste0("<p><b>No-Rep</b>: assessor" ,
+                     bsPopover("errstruct", paste0("<p><b>No-Rep</b>: assessor " ,
                                                     "effect and all possible ",
                                                    " interactions between ",
                                                    "assessor and product ",
@@ -118,7 +118,7 @@ tabPanel.model <- function(){
 #                                     id="col3", value="test3", style = "info"),
                      selectInput('MAM', 'Correct for scaling', c("Yes" = TRUE, 
                                                                  "No" = FALSE),
-                                 selected = FALSE)#,
+                                 selected = FALSE),
 #                      bsPopover("MAM", paste0("<p> Mixed Assessor Model(MAM)",
 #                                              " is applied as suggested by </p>", 
 #                                              "<p>Brockhoff, Per Bruun, ",
@@ -130,8 +130,15 @@ tabPanel.model <- function(){
 #                                              " QUALITY AND PREFERENCE 39", 
 #                                              "(2015): 156–166. Web.</p>"), 
 #                                 placement = "right", trigger = "hover")
-#                      selectInput('multMAM', 'Mult-way scaling', c("No" = FALSE, 
-#                                                                   "Yes" = TRUE))                  
+                     selectInput('multMAM', 'Mult-way scaling', c("No" = FALSE, 
+                                                                  "Yes" = TRUE)),
+                    bsPopover("multMAM", paste0("<p><b>No</b>: one scaling effect" ,
+                                                  "</p>", 
+                                                  "<p> <b>Yes</b>: multiple scaling",
+                                                  " effects ",
+                                                  "one for each product effect",
+                                                  "</p>"), 
+                              placement = "right", trigger = "hover")
     ))
 }
 
