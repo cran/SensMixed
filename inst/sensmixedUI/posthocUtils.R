@@ -13,12 +13,12 @@ posthocResult <- function(){
   if (is.null(Data())) {return()}
   if(input$analysis == "Consumer data"){
     if(class(Data()) == "sensmixed") {return("")} ## avoid error from xtable
-    result <- Data()
+    result <- Data()[[1]]
     names.lsm <- "Population means for attribute"
     names.dlsm <- "Multiple comparison tests"
   }
   else{
-    if(class(Data()) == "consmixed") {return("")} ## avoid error from xtable
+    if(class(Data()) == "conjoint") {return("")} ## avoid error from xtable
     if(is.null(input$AttrPosthoc) || length(input$AttrPosthoc)>1)
     {return()}
     if(!("post_hoc" %in% names(Data()))) {return()}
@@ -89,8 +89,7 @@ posthocPlot <- function(){
   if (is.null(Data())) {return()}
   if(input$analysis == "Consumer data"){
     if(class(Data()) == "sensmixed") {return("")} ## avoid error from xtable
-    plot(Data(), cex = 1.6, 
-         which.plot = input$whichPlot, effs = input$effsPlot) 
+    plot(Data(), cex = 1.6, test.effs = input$effsPlot) 
   }else {
     if(!("post_hoc" %in% names(Data()))) {return()}
     

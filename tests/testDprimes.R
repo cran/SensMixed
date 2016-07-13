@@ -10,10 +10,9 @@ testBO <- FALSE
 
 TVbo <- convertToFactors(TVbo, c("Assessor", "Repeat", "Picture"))
 result <- sensmixed(c("Noise", "Elasticeffect"),
-                    Prod_effects = c("TVset", "Picture"),
-                    replication = "Repeat", 
-                    individual = "Assessor", data = TVbo,
-                    calc_post_hoc = TRUE)
+                    prod_effects = c("TVset", "Picture"),
+                    assessor = "Assessor", data = TVbo,
+                    control = list(calc_post_hoc = TRUE), MAM = FALSE)
 
 m.test.noise <- lm(Noise ~ TVset + Picture + Picture:Assessor + 
                   TVset:Picture + Assessor, data = TVbo)
@@ -41,9 +40,9 @@ stopifnot(all.equal( sqrt(anova(m.test.noise)[5,4]*(1/8)*(6/11)),
   
 ## without replication
 res <- sensmixed(c("Coloursaturation", "Cutting"),
-                Prod_effects = c("TVset"), replication="Repeat", 
-                individual="Assessor", data=TVbo, parallel = FALSE,
-                calc_post_hoc = TRUE)
+                prod_effects = c("TVset"), 
+                assessor="Assessor", data=TVbo, MAM = FALSE,
+                control = list(calc_post_hoc = TRUE, parallel = FALSE))
 
 m.test.fixed <- lm(Coloursaturation ~ TVset + TVset:Assessor + Assessor, 
                      data = TVbo)
@@ -58,9 +57,9 @@ stopifnot(all.equal( sqrt(anova(m.test.fixed.cut)[1,4]*2/64),
 
 ## with replication
 res.rep <- sensmixed(c("Coloursaturation", "Cutting"),
-                 Prod_effects = c("TVset"), replication="Repeat", 
-                 individual="Assessor", data=TVbo, error_structure = "3-WAY", 
-                 parallel = FALSE, calc_post_hoc = TRUE)
+                 prod_effects = c("TVset"), replication="Repeat", 
+                 assessor="Assessor", data=TVbo, error_structure = "ASS-REP", 
+                 MAM = FALSE, control = list(calc_post_hoc = TRUE))
 
 
 
@@ -71,11 +70,11 @@ stopifnot(all.equal( sqrt(anova(m.testrep.cut)[1,4]*2/64),
 
 ## with interaction
 res.inter <- sensmixed(c("Colourbalance", "Cutting"),
-                 Prod_effects = c("TVset", "Picture"), replication="Repeat", 
-                 individual="Assessor", data=TVbo, parallel = FALSE,
-                 calc_post_hoc = TRUE)
+                 prod_effects = c("TVset", "Picture"), 
+                 assessor="Assessor", data=TVbo, control = list(parallel = FALSE,
+                 calc_post_hoc = TRUE), MAM = FALSE)
 
-m.testinter.cut <- lm(Cutting ~ TVset*Picture + TVset:Assessor + Assessor, 
+m.testinter.cut <- lm(Cutting ~ TVset*Picture + TVset:Assessor + Assessor + TVset:Picture:Assessor, 
                     data = TVbo)
 
 stopifnot(all.equal( sqrt(anova(m.testinter.cut)[1,4]*2/64),
@@ -84,7 +83,7 @@ stopifnot(all.equal( sqrt(anova(m.testinter.cut)[2,4]*2/48),
            res.inter$fixed$dprimeav[2, "Cutting"], tol = 1e-4))
 
 m.testinter.col <- lm(Colourbalance ~ TVset*Picture + TVset:Assessor + Assessor+
-                        Picture:Assessor, 
+                        TVset:Picture:Assessor, 
                       data = TVbo)
 stopifnot(all.equal( sqrt(anova(m.testinter.col)[1,4]*2/64),
            res.inter$fixed$dprimeav[1, "Colourbalance"], tol = 1e-3))
@@ -101,7 +100,7 @@ deltadifs=matrix(rep(0,144),ncol=12)
 for (i in 1:12) for (j in 1:i) deltadifs[i,j]=deltas[i]-deltas[j]
 
 
-stopifnot(all.equal( sqrt(sum(deltadifs^2/anova(m.testinter.cut)[6,3])/(66)), 
+stopifnot(all.equal( sqrt(sum(deltadifs^2/anova(m.testinter.cut)[7,3])/(66)), 
            res.inter$fixed$dprimeav[3, "Cutting"], tol = 1e-4))
 
 stopifnot(all.equal( sqrt(anova(m.testinter.cut)[4,4]*(1/8)*(6/11)), 
@@ -126,9 +125,9 @@ stopifnot(all.equal( sqrt(anova(m.testinter.col)[4,4]*(1/8)*(6/11)),
 
 ## compare examples from the d -prime presentation
 res2 <- sensmixed(c("Colourbalance", "Cutting"),
-                       Prod_effects = c("TVset", "Picture"), replication="Repeat", 
-                       individual="Assessor", data=TVbo, parallel = FALSE,
-                       calc_post_hoc = TRUE, reduce.random = FALSE)
+                       prod_effects = c("TVset", "Picture"), 
+                       assessor="Assessor", data=TVbo, control = list(parallel = FALSE,
+                       calc_post_hoc = TRUE, reduce.random = FALSE), MAM = FALSE)
 
 ## check for cutting
 m.testinter.cut <- lm(Cutting ~ TVset*Picture + TVset:Assessor + Assessor +
@@ -179,22 +178,16 @@ stopifnot(all.equal( sqrt(anova(m.testinter.col)[2,4]*2/48),
 
 if(testBO){
   result_bo <- sensmixed(c("att1", "att2"),
-                         Prod_effects=c("Track", "Car", "SPL"),
-                        replication="Rep", individual="Assessor", 
+                         prod_effects=c("Track", "Car", "SPL"),
+                         assessor="Assessor", 
                          product_structure=3, data=sound_data_balanced,
-                        calc_post_hoc = TRUE)
+                        control = list(calc_post_hoc = TRUE), MAM = FALSE)
   
-  #m.bo <- lmer(att1 ~ Track*SPL*Car + (1|Assessor) + (1|SPL:Assessor) + 
-  #                     (1|Track:SPL:Assessor) + (1|Car:SPL:Assessor), 
-  #                   data = sound_data_balanced)
-  
+
   m.bo.fixed <- lm(att1 ~ Track*SPL*Car + Assessor + SPL:Assessor + 
                        Track:SPL:Assessor + Car:SPL:Assessor, 
                      data = sound_data_balanced)
-  
-  
-  ##sigma <- summary(m.bo, "lme4")$sigma
-  
+
   deltas <- tapply(sound_data_balanced$att1,
                    factor(sound_data_balanced$Track), mean)
   

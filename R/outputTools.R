@@ -84,7 +84,9 @@ change.inter.symbol <- function(x, interact.symbol){
 
 .plotSensMixed <- function(val, pval, title, mult = FALSE, sep = FALSE,
                               cex = 2,                           
-                              interact.symbol = ":", ylab = ""){
+                              interact.symbol = ":", ylab = "", stacked = TRUE,
+                           palette = 60){
+                             
   ## change the interaction symbol
   if(!interact.symbol == ":")      
     rownames(pval) <- rownames(val) <-  sapply(rownames(val), change.inter.symbol, 
@@ -115,32 +117,171 @@ change.inter.symbol <- function(x, interact.symbol){
     
   variable <- value <- pvalue <- effsnames <- effs <- NULL
   
-  p1 <- ggplot(dval, aes(x=variable, y = value, fill = pvalue, group = effs)) + 
-    geom_bar(position = "dodge", stat = "identity")  + 
-    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.4), 
-          axis.title.x=element_blank(), 
-          axis.title.y = element_text(size = rel(1.4)), 
-          axis.text = element_text(size = rel(1)), 
-          #legend.text = element_text(size = rel(1)), 
-          #legend.title = element_text(size = rel(1)))  +
-          legend.position = "none") +
-    scale_fill_manual(values  = c(  "NS" = "grey", "p-value < 0.01" = "orange", 
-                                    "p-value < 0.05" = "yellow", 
-                                    "p-value < 0.001" = "red"), 
-                      name="Significance") + ylab(ylab)
-  
-  if(!mult)
-    return(p1 + geom_point(aes(shape = effs), fill = NA, 
-                           position = position_dodge(width = 0.9), 
-                           size = rel(5)) + 
-             scale_shape_manual(values = initialShapes, name = "Effects"))
-  else
-    return(p1 + facet_wrap( ~ effs, as.table = FALSE))    
-
+  #dval <- orderBy(~ -value + variable,dval)
+  #dval$variable <- ordered(dval$variable, levels=levels(dval$variable)[unclass(dval$variable)])
+  if(stacked){
+    dval$pvalue <- ordered(dval$pvalue)
+    dval$pvalue <- ordered(dval$pvalue, levels= c("NS", "p-value < 0.01", 
+                                                  "p-value < 0.05", 
+                                                  "p-value < 0.001"))
+    
+    sortvar <- summaryBy(value ~ variable, data = dval, FUN = sum)
+    
+    var.ord <- orderBy(-value.sum ~  variable, data = sortvar)$variable
+    
+    
+    dval$variable <- ordered(dval$variable, levels = var.ord)
+    
+    
+    ggplot(dval, aes(x=variable, y = value, fill = effs, 
+                     alpha = pvalue, order = variable)) + 
+      geom_bar(stat = "identity")  + 
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.4), 
+            axis.title.x=element_blank(), 
+            axis.title.y = element_text(size = rel(1.4)), 
+            axis.text = element_text(size = rel(1)), 
+            legend.text = element_text(size = rel(1)), 
+            legend.title = element_text(size = rel(1))) +
+      scale_alpha_manual(values  = c(  "NS" = 0.1, "p-value < 0.01" = 0.4, 
+                                       "p-value < 0.05" = 0.8, 
+                                       "p-value < 0.001" = 1), 
+                         name="Significance") + ylab(ylab) + scale_fill_hue(l=palette)
+ #     scale_fill_brewer(palette=palette)
+  }
+  else{
+    p1 <- ggplot(dval, aes(x=variable, y = value, fill = pvalue, group = effs)) + 
+      geom_bar(position = "dodge", stat = "identity")  + 
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.4), 
+            axis.title.x=element_blank(), 
+            axis.title.y = element_text(size = rel(1.4)), 
+            axis.text = element_text(size = rel(1)), 
+            legend.text = element_text(size = rel(1)), 
+            legend.title = element_text(size = rel(1)))  +
+      #legend.position = "none") +
+      scale_fill_manual(values  = c(  "NS" = "grey", "p-value < 0.01" = "orange", 
+                                      "p-value < 0.05" = "yellow", 
+                                      "p-value < 0.001" = "red"), 
+                        name="Significance") + ylab(ylab)
+    
+    if(!mult)
+      return(p1 + geom_point(aes(shape = effs), fill = NA, 
+                             position = position_dodge(width = 0.9), 
+                             size = rel(5)) + 
+               scale_shape_manual(values = initialShapes, name = "Effects"))
+    else
+      return(p1 + facet_wrap( ~ effs, as.table = FALSE))    
+  }
 }
 
 
-.changeConsmixedOutputForDoc <- function(table, name.pval){  
+###################################################################################################################
+## Different plots for SensMixed package 
+###################################################################################################################
+### plot results
+plotSensMixed <- function(resSensMixed, mult = FALSE, dprime = FALSE, sep = FALSE, cex = 2, 
+                          interact.symbol = ":", isRand = TRUE, isScaling = TRUE, 
+                          stacked = TRUE)
+{  
+  dens <- function(x)
+  {
+    if(x < 0.01) 
+      return(dens=500)    
+    if(x < 0.05) 
+      return(dens=100) 
+    if(x < 0.1)
+      return(dens=50)
+    return(dens=10)
+  }
+  
+  col.bars.F <- function(x)
+  {
+    gr <- gray.colors(3)
+    if(x < 0.05)
+      return(gr[1])
+    if(x < 0.1)
+      return(gr[2])
+    return(gr[3])
+  }
+  
+  col.bars.Chi <- function(x)
+  {
+    gr <- gray.colors(2)
+    if(x<0.05) 
+      return(gr[1]) 
+    return(gr[2])
+  } 
+  
+  
+  Chi <- sqrt(resSensMixed$random$Chi)
+  pvalueChi <- resSensMixed$random$pvalueChi
+  Fval <- sqrt(resSensMixed$fixed$Fval)
+  pvalueF <- resSensMixed$fixed$pvalueF
+  if("scaling" %in% names(resSensMixed)){
+    FScaling <- sqrt(resSensMixed$scaling$FScaling)
+    pScaling <- resSensMixed$scaling$pvalueScaling
+  }
+  if(mult == FALSE){
+    if(isRand)
+      return(.plotSensMixed(Chi, pvalueChi, title =  expression(paste("Barplot for ", 
+                                                                      sqrt(chi^2))), 
+                            mult=FALSE, sep = FALSE, interact.symbol = interact.symbol, 
+                            cex = cex, ylab = expression(sqrt(chi^2)), stacked = stacked,
+                            palette = 60))
+     else if(!isScaling){
+      if(dprime){
+        if(!"dprimeav" %in% names(resSensMixed$fixed))
+          stop("Averaged d primes are not available")
+        return(.plotSensMixed(resSensMixed$fixed$dprime, pvalueF, 
+                              title = expression(paste("Barplot for averaged d-primes")), 
+                              mult = FALSE, sep = FALSE, 
+                              interact.symbol = interact.symbol, 
+                              cex = cex, ylab = expression(paste(tilde(d), "-primes")), 
+                              stacked = stacked, palette = 30)) 
+      }
+      else
+        return(.plotSensMixed(Fval, pvalueF, title = expression(paste("Barplot for ",
+                                                                      sqrt(F), " values")), 
+                              mult=FALSE, sep = FALSE, interact.symbol = interact.symbol, 
+                              cex = cex, ylab =  expression(sqrt(F)), stacked = stacked,
+                              palette = 30)) 
+    }
+  }
+  else{
+    if(isRand)
+      return(.plotSensMixed(Chi, pvalueChi, mult = TRUE, sep = sep,
+                            interact.symbol = interact.symbol, cex = cex, 
+                            ylab = expression(sqrt(chi^2)),stacked = stacked,
+                            palette = 60))
+    else if(!isScaling){
+      if(dprime){
+        if(!"dprimeav" %in% names(resSensMixed$fixed))
+          stop("Averaged d primes are not available")
+        return(.plotSensMixed(resSensMixed$fixed$dprime, pvalueF, mult = TRUE, sep = sep,
+                              interact.symbol = interact.symbol, cex = cex, 
+                              ylab = expression(paste(tilde(d), "-primes")),
+                              stacked = stacked, palette = 30))
+      }
+      else
+        return(.plotSensMixed(Fval, pvalueF, mult = TRUE, sep = sep,
+                              interact.symbol = interact.symbol, cex = cex, 
+                              ylab = expression(sqrt(F)), stacked = stacked,
+                              palette = 30))
+    }
+  }
+  if(("scaling" %in% names(resSensMixed)) && isScaling)
+    return(.plotSensMixed(FScaling, pScaling, title = expression(paste("Barplot for ",
+                                                                       sqrt(F), " values")), 
+                          mult=FALSE, sep = FALSE, interact.symbol = interact.symbol, 
+                          cex = cex, ylab = expression(sqrt(F)), stacked = stacked,
+                          palette = 45))
+  
+  
+}
+
+###################################################################################
+
+
+.changeconjointOutputForDoc <- function(table, name.pval){  
   table[, name.pval] <- gsub("<", "&lt ", table[, name.pval])
   table  
 }
@@ -274,14 +415,14 @@ change.inter.symbol <- function(x, interact.symbol){
   
 }
 
-## output for the consmixed
-.createDocOutputConsmixed <- function(x, file = NA, bold = FALSE, append = TRUE){
+## output for the conjoint
+.createDocOutputconjoint <- function(x, file = NA, bold = FALSE, append = TRUE){
   sink(file = file, append = append)
   
   ## tests for the random effects
   x$rand.table[, "p.value"] <- format.pval(x$rand.table[,"p.value"],
                                            digits=3, eps=1e-3)
-  x$rand.table <- .changeConsmixedOutputForDoc(x$rand.table, "p.value")
+  x$rand.table <- .changeconjointOutputForDoc(x$rand.table, "p.value")
   if("elim.num" %in% colnames(x$rand.table))
     xt.rand <- xtable(x$rand.table, align="lcccc", 
                       display=c("s","f","d","s","s"))
@@ -297,7 +438,7 @@ change.inter.symbol <- function(x, interact.symbol){
   ## tests for the fixed effects
   x$anova.table[, "Pr(>F)"] <- format.pval(x$anova.table[,"Pr(>F)"],
                                            digits=3, eps=1e-3)
-  x$anova.table <- .changeConsmixedOutputForDoc(x$anova.table, "Pr(>F)")
+  x$anova.table <- .changeconjointOutputForDoc(x$anova.table, "Pr(>F)")
   if("elim.num" %in% colnames(x$anova.table)) 
     xt.anova <- xtable(x$anova.table, align="lccccccc",
                        display=c("s","f", "f", "d", "f", "f", "s", "s"))     
@@ -314,7 +455,7 @@ change.inter.symbol <- function(x, interact.symbol){
   x$diffs.lsmeans.table[, "p-value"] <- 
     format.pval(x$diffs.lsmeans.table[,"p-value"], digits=3, eps=1e-3)
   x$diffs.lsmeans.table <- 
-    .changeConsmixedOutputForDoc(x$diffs.lsmeans.table, "p-value")    
+    .changeconjointOutputForDoc(x$diffs.lsmeans.table, "p-value")    
   xt.lsmeans <- xtable(x$diffs.lsmeans.table, align="lccccccc",
                        display=c("s","f", "f", "f", "f", "f","f", "s"))
   #caption(xt.lsmeans) <- "Differences of Least Squares Means"

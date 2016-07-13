@@ -8,42 +8,42 @@ if(checkMAM){
   ##
   
   result <- sensmixed(names(TVbo)[5:(ncol(TVbo))],
-                      Prod_effects=c("TVset", "Picture"),
-                      replication="Repeat", individual="Assessor", data=TVbo, 
-                      calc_post_hoc = TRUE)
+                      prod_effects=c("TVset", "Picture"),
+                      replication="Repeat", assessor="Assessor", data=TVbo, 
+                      control = list(calc_post_hoc = TRUE), MAM = FALSE)
   
   result
   result$fixed
   
   result_MAM <- sensmixed(names(TVbo)[5:(ncol(TVbo))],
-                          Prod_effects=c("TVset", "Picture"),
-                          replication="Repeat", individual="Assessor", 
-                          data=TVbo,
+                          prod_effects=c("TVset", "Picture"),
+                          replication="Repeat", assessor="Assessor", 
+                          data = TVbo,
                           MAM = TRUE)
   
   result_MAM
   
   result_MAM_mult <- sensmixed(names(TVbo)[5:(ncol(TVbo))],
-                               Prod_effects=c("TVset", "Picture"),
-                               replication="Repeat", individual="Assessor", 
+                               prod_effects=c("TVset", "Picture"),
+                               replication="Repeat",assessor="Assessor", 
                                data=TVbo,
-                               MAM = TRUE, mult.scaling = TRUE)
+                               MAM = TRUE, control = list(MAM_mult_scaling = TRUE))
   
   result_MAM_mult
   
   atts <- names(TVbo)[5:10]
-  res_MAM <- sensmixed(atts, Prod_effects = c("TVset"), 
-                       individual="Assessor", data=TVbo, 
-                       MAM_PER=TRUE)
+  res_MAM <- sensmixed(atts, prod_effects = c("TVset"), 
+                       assessor="Assessor", data=TVbo, 
+                       control=list(MAM_balanced=TRUE))
   
   ## selecting only 3 attributes
   atts <- names(TVbo)[5:10]
-  res <- sensmixed(atts, Prod_effects=c("TVset"), individual="Assessor", 
-                   data=TVbo, MAM=TRUE, reduce.random=FALSE, 
-                   calc_post_hoc = TRUE)
+  res <- sensmixed(atts, prod_effects=c("TVset"), assessor="Assessor", 
+                   data=TVbo, MAM=TRUE, control = list(reduce.random=FALSE, 
+                   calc_post_hoc = TRUE))
   
-  res_MAM <- sensmixed(atts, Prod_effects=c("TVset"), individual="Assessor", 
-                       data=TVbo, MAM_PER=TRUE)
+  res_MAM <- sensmixed(atts, prod_effects=c("TVset"), assessor="Assessor", 
+                       data=TVbo, control = list(MAM_balanced=TRUE))
   
   #####################################################
   ## bug for Noise attribute - different with MAManalysis
@@ -87,12 +87,12 @@ if(checkMAM){
   
   ## selecting another attributes to compare
   atts <- names(TVbo)[10:12]
-  res <- sensmixed(atts, Prod_effects=c("TVset"), individual="Assessor", 
-                   data=TVbo, MAM=TRUE, reduce.random=FALSE, 
-                   calc_post_hoc = TRUE)
+  res <- sensmixed(atts, prod_effects=c("TVset"), assessor="Assessor", 
+                   data=TVbo, MAM=TRUE, control = list(reduce.random=FALSE, 
+                   calc_post_hoc = TRUE))
   
-  res_MAM <- sensmixed(atts, Prod_effects=c("TVset"), individual="Assessor", 
-                       data=TVbo, MAM_PER=TRUE)
+  res_MAM <- sensmixed(atts, prod_effects=c("TVset"), assessor="Assessor", 
+                       data=TVbo, control = list(MAM_balanced=TRUE))
   TOL <- 1e-1
   for(i in 1:length(atts)){
     print(i)

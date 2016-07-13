@@ -4,16 +4,16 @@ require(SensMixed)
 TVbo <- convertToFactors(TVbo, c("Assessor", "Repeat", "Picture"))
 
 res <- sensmixed(c("Coloursaturation", "Colourbalance"),
-                 Prod_effects = c("TVset", "Picture"), replication="Repeat", 
-                 individual="Assessor", data=TVbo, keep.effs = "Assessor")
+                 prod_effects = c("TVset", "Picture"), replication="Repeat", 
+                 assessor="Assessor", data=TVbo, 
+                 control = list(keep.effs = "Assessor"), MAM = FALSE)
 
 stopifnot(res$step_res[[1]]$rand.table["Assessor","elim.num"] == "kept")
 stopifnot(res$step_res[[2]]$rand.table["Assessor","elim.num"] == "kept")
 
 res <- sensmixed(c("Coloursaturation", "Colourbalance"),
-                 Prod_effects = c("TVset", "Picture"), replication="Repeat", 
-                 individual="Assessor", data=TVbo, 
-                 keep.effs = c("Assessor", "TVset:Picture:Assessor"))
+                 prod_effects = c("TVset", "Picture"), replication="Repeat", 
+                 assessor="Assessor", data=TVbo, MAM = FALSE)
 
 stopifnot(res$step_res[[1]]$rand.table["Assessor","elim.num"] == "kept")
 stopifnot(res$step_res[[2]]$rand.table["Assessor","elim.num"] == "kept")

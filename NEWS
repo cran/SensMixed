@@ -1,5 +1,17 @@
 2.0-9 changes:
 - fixed plots in order to pass check (due to new version of ggplot2)
 
+2.0-10:
+
+- main feature - conjoint is now part of the SensMixed package
+
+- added tests for the conjoint function
+
+- for the sensmixed function: changed the options, simplified the arguments (more user friendly). Changed accordingly the manual
+
+- in plot.sensmixed added option for the stacked barplots (sorted bars). (see the manual of how to use it)
+
+- the shiny version SensMixedUI() is changed accordingly
+
 
 

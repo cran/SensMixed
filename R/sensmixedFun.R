@@ -2,18 +2,17 @@
 ###############################################################################
 # performs  analysis of sensory data
 ###############################################################################
-sensmixedFun <- function(attributes = NULL, Prod_effects, replication = NULL, 
-                         individual, data, product_structure = 3, 
-                         error_structure = "No_Rep", 
-                         MAM = FALSE, mult.scaling = FALSE,  
-                         oneway_rand = TRUE, MAM_PER = FALSE, 
-                         adjustedMAM = FALSE, 
-                         alpha_conditionalMAM = 1, calc_post_hoc = FALSE, 
-                         parallel=FALSE, 
-                         reduce.random = TRUE, alpha.random = 0.1, 
-                         alpha.fixed = 0.05, interact.symbol = interact.symbol,
-                         keep.effs = NULL)
-  
+sensmixedFun <- function(attributes = NULL, prod_effects, 
+                         assessor, replication = NULL, data, product_structure = 3, 
+                         error_structure = "ASS-REP", 
+                         MAM = TRUE, control = list(
+                           mamControl = list(MAM_mult_scaling = FALSE, 
+                                             MAM_oneway_rand = TRUE, 
+                                             MAM_balanced = FALSE, MAM_adjusted = FALSE, 
+                                             MAM_alpha_conditional = 1), 
+                           calc_post_hoc = FALSE, parallel = FALSE, reduce.random = TRUE, 
+                           alpha.random = 0.1, alpha.fixed = 0.05, interact.symbol = ":", 
+                           keep.effs = NULL))
 {
   ## product_structure=1  (default structure) : Analysis of main fixed effects
   ## product_structure=2 : Main effects AND all 2-factor interactions. 
@@ -27,42 +26,44 @@ sensmixedFun <- function(attributes = NULL, Prod_effects, replication = NULL,
     attributes <- colnames(data)[attributes]
   
   if(length(attributes) < 7)
-    parallel <- FALSE
+    parallel <-  FALSE
+  else
+    parallel <- rmatch(control, "parallel")
   
   
-  if(MAM_PER)
+  if(rmatch(control,"MAM_balanced"))
   {
-      return(runMAM(data, Prod_effects, individual, attributes, adjustedMAM, 
-                    alpha_conditionalMAM))   
+      return(runMAM(data, prod_effects, assessor, attributes, rmatch(control,"MAM_adjusted"), 
+                    rmatch(control,"MAM_alpha_conditional")))   
   }
 
   
-  if(!is.null(replication) && error_structure!="No-Rep")
-    random <- list(individual=individual, replication=replication)
+  if(!is.null(replication) && error_structure!="ONLY-ASS")
+    random <- list(individual=assessor, replication=replication)
   else
-    random <- individual
+    random <- assessor
   isRandReduce <- TRUE
   isFixReduce <- FALSE
   isLsmeans <- TRUE
-  
-  
-  
- 
 
   nbvar <- length(attributes)
   
-  
+  keep.effs <- unique(c(rmatch(control,"keep.effs"),
+                       paste(paste(prod_effects,
+                                   collapse = ":"),
+                             assessor, sep = ":"),
+                       assessor))
   
   ## create the initial model
   suppressMessages(model.init <- createLMERmodel(structure = 
                                   list(product_structure=product_structure, 
                            error_structure = error_structure), 
                            data, attributes[1],
-                           fixed = list(Product = Prod_effects, Consumer = NULL),
+                           fixed = list(Product = prod_effects, Consumer = NULL),
                            random = random, corr=FALSE, MAM, 
-                           mult.scaling = mult.scaling,  
-                           calc_post_hoc = calc_post_hoc, 
-                           oneway_rand = oneway_rand))
+                           mult.scaling = rmatch(control, "MAM_mult_scaling"),  
+                           calc_post_hoc = rmatch(control, "calc_post_hoc"), 
+                           oneway_rand = rmatch(control, "MAM_oneway_rand")))
   model <- model.init #if(MAM) model.init$modelMAM else model.init
 
   
@@ -89,7 +90,7 @@ sensmixedFun <- function(attributes = NULL, Prod_effects, replication = NULL,
   ## TODO: change rownames for pvaues according to elimRand.R
   ##       should work for slopes as well
   rownames(pvalueF) <- fixedrand$fixedeffs
-  pvalueF <- .renameScalingTerm(pvalueF, Prod_effects) 
+  pvalueF <- .renameScalingTerm(pvalueF, prod_effects) 
   
   rownames(pvalueChi) <- fixedrand$randeffs
 
@@ -112,19 +113,22 @@ sensmixedFun <- function(attributes = NULL, Prod_effects, replication = NULL,
         res <- llply(attributes, .stepAllAttrNoMAM, 
                      product_structure = product_structure, 
                      error_structure = error_structure,
-                     data = data, Prod_effects = Prod_effects, random = random,
-                     reduce.random = reduce.random, alpha.random = alpha.random, 
-                     alpha.fixed = alpha.fixed,  calc_post_hoc, 
+                     data = data, prod_effects = prod_effects, random = random,
+                     reduce.random = rmatch(control, "reduce.random"), 
+                     alpha.random = rmatch(control, "alpha.random"), 
+                     alpha.fixed = rmatch(control, "alpha.fixed"),  
+                     calc_post_hoc = rmatch(control, "calc_post_hoc"), 
                      keep.effs = keep.effs, .progress="text")
       else
         res <- stepParallelNoMAM(attributes, 
                             product_structure = product_structure, 
                             error_structure = error_structure,
-                            data = data, Prod_effects = Prod_effects, 
+                            data = data, prod_effects = prod_effects, 
                             random = random,
-                            reduce.random = reduce.random, 
-                            alpha.random = alpha.random, 
-                            alpha.fixed = alpha.fixed,  calc_post_hoc,
+                            reduce.random = rmatch(control, "reduce.random"), 
+                            alpha.random = rmatch(control, "alpha.random"), 
+                            alpha.fixed = rmatch(control, "alpha.fixed"),  
+                            calc_post_hoc = rmatch(control, "calc_post_hoc"), 
                             keep.effs = keep.effs)
     }
     else{
@@ -132,23 +136,27 @@ sensmixedFun <- function(attributes = NULL, Prod_effects, replication = NULL,
         res <- llply(attributes, .stepAllAttrMAM, 
                     product_structure = product_structure, 
                     error_structure = error_structure,
-                    data = data, Prod_effects = Prod_effects, random = random,
-                    reduce.random = reduce.random, alpha.random = alpha.random, 
-                    alpha.fixed = alpha.fixed, 
-                    mult.scaling = mult.scaling, 
-                    calc_post_hoc = calc_post_hoc, 
-                    keep.effs = keep.effs, oneway_rand = oneway_rand,
+                    data = data, prod_effects = prod_effects, random = random,
+                    reduce.random = rmatch(control,"reduce.random"),
+                    alpha.random = rmatch(control, "alpha.random"), 
+                    alpha.fixed = rmatch(control, "alpha.fixed"), 
+                    mult.scaling = rmatch(control, "MAM_mult_scaling"), 
+                    calc_post_hoc = rmatch(control, "calc_post_hoc"), 
+                    keep.effs = keep.effs, 
+                    oneway_rand = rmatch(control, "MAM_oneway_rand"),
                     .progress="text") 
       else
         res <- stepParallelMAM(attributes,
                    product_structure = product_structure, 
                    error_structure = error_structure,
-                   data = data, Prod_effects = Prod_effects, random = random,
-                   reduce.random = reduce.random, alpha.random = alpha.random, 
-                   alpha.fixed = alpha.fixed, 
-                   mult.scaling = mult.scaling, 
-                   calc_post_hoc = calc_post_hoc,
-                   keep.effs = keep.effs, oneway_rand = oneway_rand)  
+                   data = data, prod_effects = prod_effects, random = random,
+                   reduce.random = rmatch(control,"reduce.random"), 
+                   alpha.random = rmatch(control, "alpha.random"), 
+                   alpha.fixed = rmatch(control, "alpha.fixed"), 
+                   mult.scaling = rmatch(control, "MAM_mult_scaling"), 
+                   calc_post_hoc = rmatch(control, "calc_post_hoc"),
+                   keep.effs = keep.effs, 
+                   oneway_rand = rmatch(control, "MAM_oneway_rand"))  
     } 
     names(res) <- attributes
  # }
@@ -158,7 +166,7 @@ sensmixedFun <- function(attributes = NULL, Prod_effects, replication = NULL,
   
   #### fill the results
   finalres <- tryCatch({
-    if(calc_post_hoc){
+    if(rmatch(control, "calc_post_hoc")){
       post_hoc <- vector(mode = "list", length = length(res))      
       names(post_hoc) <- attributes
       ## create d prime output
@@ -189,7 +197,7 @@ sensmixedFun <- function(attributes = NULL, Prod_effects, replication = NULL,
       Chi[rownames(calcrand),i] <- calcrand[,"Chi.sq"] 
       
       ## fill differences of lsmeans
-      if(calc_post_hoc){
+      if(rmatch(control, "calc_post_hoc")){
         post_hoc[[i]] <- res[[i]]$diffs.lsmeans.table
         dprimeav[rownames(calc), i] <- calc[, "dprimeav"]
       }
@@ -203,19 +211,24 @@ sensmixedFun <- function(attributes = NULL, Prod_effects, replication = NULL,
   if(is.null(finalres) && parallel){
     message(" \n WARNING: error in parallel has occurred: cannot call Kenward-Roger 
             in parallel. instead use unparallelized version \n")     
-    return(sensmixedFun(attributes = attributes, Prod_effects = Prod_effects, 
-                        replication = replication, individual = individual, 
+    return(sensmixedFun(attributes = attributes, prod_effects = prod_effects, 
+                        assessor = assessor, replication = replication, 
                         data = data, product_structure = product_structure, 
-                        error_structure = error_structure, MAM = MAM, 
-                        mult.scaling = mult.scaling,  
-                        oneway_rand = oneway_rand, 
-                        MAM_PER = MAM_PER, adjustedMAM = adjustedMAM, 
-                        alpha_conditionalMAM = alpha_conditionalMAM, 
-                        calc_post_hoc = calc_post_hoc, parallel = FALSE, 
-                        reduce.random = reduce.random, 
-                        alpha.random = alpha.random, alpha.fixed = alpha.fixed, 
-                        interact.symbol = interact.symbol,
-                        keep.effs = keep.effs))
+                        error_structure = error_structure, 
+                        MAM = MAM, control = list(
+                          mamControl = 
+                            list(MAM_mult_scaling = rmatch(control, "MAM_mult_scaling"), 
+                                 MAM_oneway_rand = rmatch(control, "MAM_oneway_rand"), 
+                                 MAM_balanced = rmatch(control, "MAM_balanced"), 
+                                 MAM_adjusted = rmatch(control, "MAM_adjusted"), 
+                                 MAM_alpha_conditional = rmatch(control, "MAM_alpha_conditional")), 
+                          calc_post_hoc = rmatch(control, "calc_post_hoc"), 
+                          parallel = rmatch(control, "parallel"), 
+                          reduce.random = rmatch(control, "reduce.random"), 
+                          alpha.random = rmatch(control, "alpha.random"), 
+                          alpha.fixed = rmatch(control, "alpha.fixed"), 
+                          interact.symbol = rmatch(control, "interact.symbol"), 
+                          keep.effs = keep.effs)))
   }
   ## change the output
   ## output for the random effects
@@ -231,7 +244,7 @@ sensmixedFun <- function(attributes = NULL, Prod_effects, replication = NULL,
     
     #tr_fixed <- .changeOutput(Fval, pvalueF, FALSE)
     #tr_scaling <- .changeOutput(FScaling, pvalueScaling, FALSE)    
-    if(calc_post_hoc){
+    if(rmatch(control, "calc_post_hoc")){
       dprimeav <- dprimeav[!ind.scaling, , drop=FALSE]
       return(list(fixed = list(Fval = Fval, dprimeav = dprimeav, 
                                pvalueF = pvalueF), 
@@ -249,7 +262,7 @@ sensmixedFun <- function(attributes = NULL, Prod_effects, replication = NULL,
   }
   #tr_fixed <- .changeOutput(Fval, pvalueF, FALSE)
   
-  if(calc_post_hoc)    
+  if(rmatch(control, "calc_post_hoc"))    
       return(list(fixed = list(Fval = Fval, dprimeav = dprimeav, 
                                pvalueF = pvalueF), 
                   random = list(Chi = Chi, pvalueChi = pvalueChi), 

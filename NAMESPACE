@@ -12,37 +12,34 @@ importFrom("graphics", plot)
 importFrom(xtable, xtable)
 importFrom(plyr, llply)
 import(methods)
-import(parallel)
+#import(parallel)
 #import(plyr)
 import(doBy)
 import(shiny)
-#import(xtable)
 import(reshape2)
 import(ggplot2)
-#import(googleVis)
 importFrom(shinyBS, bsPopover)
 importFrom("grDevices", "gray.colors")
 importFrom("stats", "as.formula", "ave", "delete.response", "formula",
              "lm", "model.frame", "model.matrix", "pf", "predict",
              "printCoefmat", "pt", "qnorm", "qt", "replications",
              "terms", "terms.formula", "uniroot", "update",
-             "update.formula")
+             "update.formula", "p.adjust", "residuals", "setNames")
 importFrom("utils", "combn")
 
 export(sensmixed)
-export(consmixed)
+export(sensmixedControl)
+export(conjoint)
 export(saveToDoc)
 export(SensMixedUI)
-#exportClasses(sensmixed)
-#exportClasses(consmixed)
 export(convertToFactors)
 export(plotLSMEANS)
 
 
 S3method(print, sensmixed)
 S3method(plot, sensmixed)
-S3method(print, consmixed)
-S3method(plot, consmixed)
+S3method(print, conjoint)
+S3method(plot, conjoint)
 
 
 

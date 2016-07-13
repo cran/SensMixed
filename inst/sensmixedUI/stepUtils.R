@@ -15,12 +15,17 @@ stepRandResult <- function(){
   if (is.null(Data())) {return("")} 
   if(input$analysis == "Consumer data"){
     if(class(Data()) == "sensmixed") {return("")} ## avoid error from xtable
-    rnd <- Data()$rand.table
-    rnd[ , "p.value"] <- 
-      format.pval(rnd[, "p.value"], digits=3, eps=1e-3)
-    rnd_tab <- xtable(rnd, align = 
+    rnd <- Data()[[1]]$rand.table
+    # rnd[ , "p.value"] <- 
+    #   format.pval(rnd[, "p.value"], digits=3, eps=1e-3)
+    if("elim.num" %in% colnames(rnd))
+      rnd_tab <- xtable(rnd, align = 
                         paste(c("l", rep("l", ncol(rnd))), collapse = ""), 
                       display= c("s","f","d","s","s"))
+    else
+      rnd_tab <- xtable(rnd, align = 
+                          paste(c("l", rep("l", ncol(rnd))), collapse = ""), 
+                        display= c("s","f","d","s"))
     caption(rnd_tab) <- paste("Likelihood ratio tests for the 
                               random-effects and their order of elimination representing Step 1 of 
                               the automated analysis") 
@@ -34,7 +39,7 @@ stepRandResult <- function(){
     
   }
   else{
-    if(class(Data()) == "consmixed") {return("")} ## avoid error from xtable
+    if(class(Data()) == "conjoint") {return("")} ## avoid error from xtable
     if(is.null(input$AttrStep) || length(input$AttrStep)>1)
     {return()}
     st <- Data()$step_res[[input$AttrStep]] 
@@ -71,8 +76,8 @@ stepFixedResult <- function(){
   if (is.null(Data())) {return()}
   if(input$analysis == "Consumer data"){
     if(class(Data()) == "sensmixed") {return("")} ## avoid error from xtable
-    an <- Data()$anova.table
-    an[, "Pr(>F)"] <- format.pval(an[, "Pr(>F)"], digits=3, eps=1e-3)
+    an <- Data()[[1]]$anova.table
+    #an[, "Pr(>F)"] <- format.pval(an[, "Pr(>F)"], digits=3, eps=1e-3)
     if("elim.num" %in% colnames(an))
       an_tab <- xtable(an, align = paste(c("l", rep("l", ncol(an))), 
                                          collapse = ""), 
@@ -93,7 +98,7 @@ stepFixedResult <- function(){
     
   }
   else{
-    if(class(Data()) == "consmixed") {return("")} ## avoid error from xtable
+    if(class(Data()) == "conjoint") {return("")} ## avoid error from xtable
     if(is.null(input$AttrStep) || length(input$AttrStep)>1)
     {return()}
     

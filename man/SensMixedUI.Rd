@@ -18,6 +18,8 @@ SensMixedUI()
 Alexandra Kuznetsova, Per Bruun Brockhoff, Rune Haubo Bojesen Christensen
 }
 
+\seealso{\link{sensmixed}, \link{conjoint}}
+
 \examples{
 
 \dontrun{

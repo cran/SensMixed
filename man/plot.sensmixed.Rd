@@ -10,8 +10,8 @@ square roots of chi square values for all attributes
 }
 \usage{
 \method{plot}{sensmixed} (x, mult = FALSE, dprime = FALSE, sep = FALSE, 
-                             cex = 2,  interact.symbol = ":", isFixed = TRUE, 
-                             isRand = TRUE, isScaling = TRUE, ...)
+                             cex = 2,  interact.symbol = ":",
+                             isRand = TRUE, isScaling = TRUE, stacked = TRUE, ...)
 }
 
 \arguments{
@@ -36,15 +36,16 @@ The magnification to be used
 \item{interact.symbol}{
 The symbol to be used for the interaction effects
 }
-\item{isFixed}{
-logical. Whether to plot tests of the fixed effects
-}
 \item{isRand}{
 logical. Whether to plot tests of the random effects
 }
 
 \item{isScaling}{
 logical. Whether to plot the scaling factor if present
+}
+
+\item{stacked}{
+logical. Whether  bars should be stacked
 }
 
  \item{\dots}{
@@ -64,11 +65,12 @@ Alexandra Kuznetsova
 
 
 \examples{
-res <- sensmixed(c("Coloursaturation", "Colourbalance"),
-                  Prod_effects=c("TVset"), 
-                  individual="Assessor", data=TVbo, MAM=TRUE, 
-                  reduce.random=FALSE)
-plot(res)
-plot(res, mult = TRUE)
-plot(res, interact.symbol = " x ")
+res <- sensmixed(c("Coloursaturation", "Colourbalance", "Noise"),
+                  prod_effects=c("TVset", "Picture"), 
+                  assessor="Assessor", data=TVbo, MAM=TRUE, 
+                  control=list(reduce.random=FALSE))
+plot(res, isRand = TRUE)
+plot(res, isRand = FALSE)
+plot(res, stacked = FALSE, mult = TRUE)
+plot(res, isRand = FALSE, stacked = FALSE, interact.symbol = " x ")
 }

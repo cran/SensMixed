@@ -47,16 +47,16 @@ shinyServer(function(input, output, session) {
     if(is.null(Data()))
       return("")
     
-    if(class(Data()) == "consmixed") { return() }
+    if(class(Data()) == "conjoint") { return() }
     
     if(input$typeEffs == 1){
-        return(plot(Data(), mult = input$representPlot, isFixed = FALSE,
-                    isScaling = FALSE, cex = 2))
+        return(plot(Data(), mult = input$representPlot, isRand = TRUE,
+                    isScaling = FALSE, cex = 2, stacked = input$stackedPlot))
     }
     else if(input$typeEffs == 2){
       return(plot(Data(), mult = input$representPlot, isRand = FALSE, 
                   isScaling = FALSE, 
-                  dprime = input$typePlot, cex = 2))
+                  dprime = input$typePlot, cex = 2, stacked = input$stackedPlot))
     }
     else{
       return(plot(Data(), mult = input$representPlot, isRand = FALSE, 
@@ -150,7 +150,7 @@ shinyServer(function(input, output, session) {
     if(is.null(uploadData())) { return() }
     if(input$analysis == "Consumer data") { return() }
     if(is.null(Data())){return()}
-    if(class(Data()) == "consmixed") { return() }
+    if(class(Data()) == "conjoint") { return() }
     saveToDoc(Data(), type = input$typetable2, typeEffs = input$typeEffsTable)    
   })
   
@@ -171,7 +171,7 @@ shinyServer(function(input, output, session) {
     if(is.null(uploadData())) { return() }
     if(input$analysis == "Consumer data") { return() }
     if(is.null(Data()) || is.null(Data()$MAMan)){return()}
-    if(class(Data()) == "consmixed") { return() }
+    if(class(Data()) == "conjoint") { return() }
     
     resposthoc <- Data()$MAMan[[5]][, , input$AttrMAManalysis]
     resci <- Data()$MAMan[[8]][, , input$AttrMAManalysis]
@@ -208,7 +208,7 @@ shinyServer(function(input, output, session) {
     if(is.null(uploadData())) { return() }
     if(input$analysis == "Consumer data") { return() }
     if(is.null(Data()) || is.null(Data()$MAMan)){return()}
-    if(class(Data()) == "consmixed") { return() }
+    if(class(Data()) == "conjoint") { return() }
     
     resposthoc <- Data()$MAMan[[5]][, , input$AttrMAManalysis]
     resci <- Data()$MAMan[[8]][, , input$AttrMAManalysis]
@@ -265,11 +265,10 @@ shinyServer(function(input, output, session) {
 
   output$helperrstruct <- renderTable({
     helperrstruct  <- matrix(NA, nrow = 3, ncol = 1)
-    rownames(helperrstruct) <- c("No-Rep","2-WAY","3-WAY")
+    rownames(helperrstruct) <- c("ONLY-ASS", "ASS-REP")
     colnames(helperrstruct) <- "Explanations"
     helperrstruct[1,1] <- "assessor effect and all possible interactions between assessor and product effects"
-    helperrstruct[2,1] <- "No-Rep + replicate effect and replicate assessor interaction effect"
-    helperrstruct[3,1] <- "assessor and replicate effect and interaction between them and interaction between them and Product_effects"
+    helperrstruct[2,1] <- "assessor and replicate effect and interaction between them and interaction between them and product effects"
     return(xtable(helperrstruct))
   })
   

@@ -7,7 +7,7 @@ mamanova <- function(){
   if(is.null(uploadData())) { return() }
   if(input$analysis == "Consumer data") { return() }
   if(is.null(Data()) || is.null(Data()$MAMan)){return()}
-  if(class(Data()) == "consmixed") { return() }
+  if(class(Data()) == "conjoint") { return() }
   resmam <- Data()$MAMan[[3]][, , input$AttrMAManalysis]
   resmam[ , "Pval"] <- 
     format.pval(resmam[, "Pval"], digits=3, eps=1e-3)
@@ -30,7 +30,7 @@ mamindiv <- function(){
   if(is.null(uploadData())) { return() }
   if(input$analysis == "Consumer data") { return() }
   if(is.null(Data()) || is.null(Data()$MAMan)){return()}
-  if(class(Data()) == "consmixed") { return() }
+  if(class(Data()) == "conjoint") { return() }
   resindiv <- Data()$MAMan[[1]][, , input$AttrMAManalysis]
   resindiv <- xtable(resindiv, align = 
                        paste(c("l", rep("l", ncol(resindiv))), collapse = ""), 
@@ -47,7 +47,7 @@ mamperf <- function(){
   if(is.null(uploadData())) { return() }
   if(input$analysis == "Consumer data") { return() }
   if(is.null(Data()) || is.null(Data()$MAMan)){return()}
-  if(class(Data()) == "consmixed") { return() }
+  if(class(Data()) == "conjoint") { return() }
   resperf <- Data()$MAMan[[2]][, , input$AttrMAManalysis]
   resperf <- xtable(resperf, align = 
                       paste(c("l", rep("l", ncol(resperf))), collapse = ""), 
@@ -64,7 +64,7 @@ mamposthoc <-function(){
   if(is.null(uploadData())) { return() }
   if(input$analysis == "Consumer data") { return() }
   if(is.null(Data()) || is.null(Data()$MAMan)){return()}
-  if(class(Data()) == "consmixed") { return() }
+  if(class(Data()) == "conjoint") { return() }
   
   resposthoc <- Data()$MAMan[[5]][, , input$AttrMAManalysis]
   resci <- Data()$MAMan[[8]][, , input$AttrMAManalysis]
@@ -85,7 +85,7 @@ mamdiffmean <- function(){
   if(is.null(uploadData())) { return() }
   if(input$analysis == "Consumer data") { return() }
   if(is.null(Data()) || is.null(Data()$MAMan)){return()}
-  if(class(Data()) == "consmixed") { return() }
+  if(class(Data()) == "conjoint") { return() }
   resdiffmean <- Data()$MAMan[[6]]
   ## change rownames in order not to have duplicated names
   oddrows <- seq(2, nrow(resdiffmean), by = 2)

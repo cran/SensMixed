@@ -1,8 +1,5 @@
 #### The file contains the server part of the UI (interactive UI)
 
-
-
-
 ## constructs tab panel for the input controls
 tabPanel.input <- function(names.dd){
   if(input$analysis == "Consumer data")
@@ -82,54 +79,25 @@ tabPanel.model <- function(){
                                                 "<p><b>3</b>: main effects and ",
                                                 "all possible interactions</p>"), 
                                placement = "right", trigger = "hover"),
-#                      bsCollapsePanel("Help product structure", 
-#                                      tableOutput("helpprodstruct"), id="colll1", 
-#                                      value="testlll1", style = "info"),
                      selectInput('errstruct', 
                                  'Select error structure', 
-                                 c("No_Rep" = "No_Rep", 
-                                   "2-WAY" = "2-WAY", 
-                                   "3-WAY" = "3-WAY")),
+                                 c("ONLY-ASS" = "ONLY-ASS", 
+                                   "ASS-REP" = "ASS-REP")),
 
-                     bsPopover("errstruct", paste0("<p><b>No-Rep</b>: assessor " ,
+                     bsPopover("errstruct", paste0("<p><b>ONLY-ASS</b>: assessor " ,
                                                     "effect and all possible ",
                                                    " interactions between ",
                                                    "assessor and product ",
                                                    "effects</p>", 
-                                                   "<p> <b>2-WAY</b>: <b>No-Rep</b> and",
-                                                   " replicate effect and ",
-                                                   "replicate assessor ",
-                                                   "interaction effect</p>",
-                                                   "<p> <b>3-WAY</b>: assessor ",
+                                                   "<p> <b>ASS-REP</b>: assessor ",
                                                    "and replicate effect and ",
                                                    "interaction between them ",
                                                    "and interaction between ",
-                                                   "them and Product_effects</p>"), 
+                                                   "them and product effects</p>"), 
                                placement = "right", trigger = "hover"),
-
-#                      bsCollapsePanel("Help error structure", 
-#                                      tableOutput("helperrstruct"), 
-#                                      id="col2", value="test2", style = "info"),
-                     
-#                     selectInput('oneway_rand', 'One-way product random part', 
-#                                 c( "No" = FALSE, "Yes" = TRUE)),
-#                     bsCollapsePanel("Help one-way product random part", 
-#                                     tableOutput("helponeway"), 
-#                                     id="col3", value="test3", style = "info"),
                      selectInput('MAM', 'Correct for scaling', c("Yes" = TRUE, 
                                                                  "No" = FALSE),
                                  selected = FALSE),
-#                      bsPopover("MAM", paste0("<p> Mixed Assessor Model(MAM)",
-#                                              " is applied as suggested by </p>", 
-#                                              "<p>Brockhoff, Per Bruun, ",
-#                                              "Pascal Schlich, and Ib Skovgaard.",
-#                                              "Taking Individual Scaling ",
-#                                              "Differences into Account by ",
-#                                              "Analyzing Profile Data with the ",
-#                                              " Mixed Assessor Model.” FOOD ",
-#                                              " QUALITY AND PREFERENCE 39", 
-#                                              "(2015): 156–166. Web.</p>"), 
-#                                 placement = "right", trigger = "hover")
                      selectInput('multMAM', 'Mult-way scaling', c("No" = FALSE, 
                                                                   "Yes" = TRUE)),
                     bsPopover("multMAM", paste0("<p><b>No</b>: one scaling effect" ,
@@ -214,9 +182,6 @@ tabsCons <- function(){
       ),
       tabPanel("Step output",               
                sidebarLayout(
-                 #                  conditionalPanel(condition =  "input.analysis == 'Sensory data'",
-                 #                  sidebarPanel(
-                 #                    uiOutput("AttrStepUI"))), 
                  sidebarPanel(
                    uiOutput("AttrStepUI")),
                  mainPanel(
@@ -260,6 +225,7 @@ tabsSens <- function(){
                                  c("random" = 1, "fixed" = 2, "scaling" = 3)),
                      selectInput('typePlot', 'Plot type', 
                                  c("F" = FALSE, "d-prime" = TRUE)),
+                     checkboxInput('stackedPlot', 'stacked', value = TRUE),
                      selectInput('representPlot', 'Layout', 
                                  c("single" = FALSE, "multiple" = TRUE)),
                      numericInput('scalePlot', label = "Scale plot", value = 1),
@@ -284,9 +250,6 @@ tabsSens <- function(){
            value = 2),
       tabPanel("Step output",               
            sidebarLayout(
-             #                  conditionalPanel(condition =  "input.analysis == 'Sensory data'",
-             #                  sidebarPanel(
-             #                    uiOutput("AttrStepUI"))), 
              sidebarPanel(
                uiOutput("AttrStepUI")),
              mainPanel(
@@ -338,17 +301,8 @@ tabsSens <- function(){
 }
 
 returnOutputs <- function(){
-  #if(!is.null(input$uploaddata) && input$uploaddata == 2)
-    
-#  if( (is.null(input$analysis) && is.null(input$uploaddata)) 
-#      || input$analysis == "Sensory data")
- #   return(tabsSens())
   if(is.null(input$analysis)){
-   # if(!is.null(input$uploaddata) && input$uploaddata == 3)
-      #return(tabsCons())
     return(tabsSens())
-   # else
-    #  return(tabsSens())
   }
 
   if(input$analysis == "Sensory data")
@@ -399,7 +353,7 @@ output$AttrPosthocUI <- renderUI({
 
 output$AttrMAManalysis <- renderUI({
   if(is.null(Data()))    {return()}   
-  if(class(Data()) == "consmixed") { return() }
+  if(class(Data()) == "conjoint") { return() }
     list(
       selectInput("AttrMAManalysis", "Select attribute", names(Data()$step_res))    
     )      

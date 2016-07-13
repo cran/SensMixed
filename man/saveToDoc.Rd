@@ -2,11 +2,11 @@
 \alias{saveToDoc}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-save the result in tables into a doc file for sensmixed or consmixed objects
+save the result in tables into a doc file for sensmixed or conjoint objects
 }
 \description{
 save the tests for the random and fixed effects into a doc file 
-for sensmixed or consmixed objects
+for sensmixed or conjoint objects
 }
 \usage{
 saveToDoc(x, file = NA, bold = FALSE, append = TRUE, type = "html", typeEffs = 1)
@@ -14,7 +14,7 @@ saveToDoc(x, file = NA, bold = FALSE, append = TRUE, type = "html", typeEffs = 1
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
-object of class sensmixed or consmixed.
+object of class sensmixed or conjoint.
 }
   \item{file}{
 a character string naming the file to write to, or NULL to stop sink-ing.
@@ -50,8 +50,8 @@ Alexandra Kuznetsova
 \examples{
 \dontrun{
 res <- sensmixed(c("Coloursaturation", "Colourbalance"),
-                  Prod_effects=c("TVset"), 
-                  individual="Assessor", data=TVbo)
+                  prod_effects=c("TVset"), 
+                  assessor="Assessor", data=TVbo)
 
 saveToDoc(res, file = "C:/Desktop/output.doc")
 }

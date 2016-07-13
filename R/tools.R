@@ -5,13 +5,13 @@ isbalanced <- function(data)
 }
 
 ## PER'S FUNCTION MAMANALYSIS.R
-runMAM <- function(data, Prod_effects, individual, attributes, adjustedMAM=FALSE, 
+runMAM <- function(data, prod_effects, assessor, attributes, adjustedMAM=FALSE, 
                    alpha_conditionalMAM=1){
   if(length(attributes) < 2)
     stop("number of attributes for MAM should be more than 1")
-  if(length(Prod_effects) > 1)
+  if(length(prod_effects) > 1)
     stop("should be one-way product structure")  
-  dataMAM <- data[, c(individual, Prod_effects)]
+  dataMAM <- data[, c(assessor, prod_effects)]
   dataMAM$replication <- rep(0, nrow(data))
   dataMAM[, 1] <- as.factor(dataMAM[, 1])
   dataMAM[, 2] <- as.factor(dataMAM[, 2])
@@ -180,6 +180,47 @@ fixedOrRandFormula <- function(fmodel, isfixed = TRUE)
 return(list(fo.anova = fo.anova, data = data))
 } 
 
+
+
+### Create an lmer model for conjoint
+createLMERmodelConjoint <- function(structure, data, response, fixed, random, corr, isFormula = FALSE)
+{ 
+  #construct formula for lmer model 
+  mf.final <- createFormulaAllFixRand(structure, data, response, fixed, random, corr) 
+  if(isFormula){ 
+    return(mf.final)
+  }
+  else{
+    ## suppressMessages(model <- eval(substitute(lmer( mf.final, control=lmerControl(check.nobs.vs.rankZ = "ignore")),list( mf.final= mf.final))))
+    model <- lmerTest::lmer(mf.final, data) 
+    return(model)
+  }
+}
+
+calcResidSaturFixedCons <- function(data, fmodel, random)
+{ 
+  #construct the model with all conjoint factors plus Consumer as fixed factor
+  mf.final <- makeFormulaConsumer.fixed(fmodel, random)
+  m <- lm(mf.final, data=data)
+  mdat <- model.frame(m)
+  resid.dat <- mdat[,-1]
+  resid.dat$resid <- residuals(m)
+  return(resid.dat)
+}
+
+makeFormulaConsumer.fixed <- function(fmodel, random)
+{
+  terms.fm <- attr(terms.formula(fmodel),"term.labels")
+  ind.rand.terms <- which(unlist(lapply(terms.fm,function(x) substring.location(x, "|")$first))!=0)
+  fm <- paste(fmodel)
+  fm[3] <- paste(c(terms.fm[-ind.rand.terms], random), collapse=" + ")
+  if(fm[3]=="")
+    fo <- as.formula(paste(fm[2],fm[1],1, sep=""))
+  else
+    fo <- as.formula(paste(fm[2],fm[1],fm[3], sep=""))
+  return(fo)
+}
+
 ### Create an lmer model
 createLMERmodel <- function(structure, data, response, fixed, random, corr, 
                             MAM = FALSE, mult.scaling = FALSE, 
@@ -224,13 +265,17 @@ createLMERmodel <- function(structure, data, response, fixed, random, corr,
 
 
 # check an interaction term for validity
-checkComb <- function(data, factors)
+checkComb <- function(data, factors, structure)
 {
-  ## removed checkZeroCell in 2.0-7 version
-  ## since Rune has fixed an issue with rank deficiency
-  return(checkNumberInteract(data,factors))# || checkZeroCell(data, factors))
+  ## sensmixed accepts zero cells, consmixed does not (the combination is removed)
+  if(is.list(structure))
+    return(checkNumberInteract(data,factors))
+  else
+    return(checkNumberInteract(data,factors) || checkZeroCell(data, factors))
 }
 
+
+## UNUSED function
 .fixedrand <- function(model)
 {
   effs <- attr(terms(formula(model)), "term.labels")
@@ -247,15 +292,15 @@ checkComb <- function(data, factors)
   pvalue
 }
 
-.renameScalingTerm <- function(tableWithScaling, Prod_effects){
+.renameScalingTerm <- function(tableWithScaling, prod_effects){
   idsScaling <- unlist(lapply(rownames(tableWithScaling), 
                 function(x) grepl(":x.scaling.private", x)))
   if(sum(idsScaling) > 1){
-    for(i in 1:length(Prod_effects)){
+    for(i in 1:length(prod_effects)){
       numscale <- unlist(lapply(rownames(tableWithScaling)[idsScaling], 
-                    function(x) grepl(Prod_effects[i], x)))
+                    function(x) grepl(prod_effects[i], x)))
       rownames(tableWithScaling)[idsScaling][numscale] <- paste("Scaling", 
-                                                                Prod_effects[i],
+                                                                prod_effects[i],
                                                                 sep = " ")
     }
   }
@@ -392,7 +437,7 @@ getPureInter <- function(lsm.table, anova.table, eff){
 
 ## calculate average d prime from the step function
 .calcAvDprime <- function(model, anova.table, dlsm.table, lsm.table){
-  sigma <- summary(model, "lme4")$sigma
+  sigma <- summary(model)$sigma
   rows <- sapply(rownames(dlsm.table), 
                  function(x) strsplit(x, " ")[[1]][1]) 
   anova.table$dprimeav <- rep(1, nrow(anova.table))
@@ -427,7 +472,7 @@ getPureInter <- function(lsm.table, anova.table, eff){
 
 
 .stepAllAttrNoMAM <- function(attr, product_structure, error_structure,
-                              data, Prod_effects, random,
+                              data, prod_effects, random,
                               reduce.random = reduce.random, 
                               alpha.random = alpha.random, 
                               alpha.fixed = alpha.fixed, 
@@ -439,7 +484,7 @@ getPureInter <- function(lsm.table, anova.table, eff){
                                                error_structure = 
                                                  error_structure), 
                                         data = data, response = attr,
-                                        fixed = list(Product = Prod_effects,
+                                        fixed = list(Product = prod_effects,
                                                      Consumer = NULL),
                                         random = random, corr = FALSE,
                                         calc_post_hoc = calc_post_hoc))
@@ -462,7 +507,7 @@ getPureInter <- function(lsm.table, anova.table, eff){
 
 ## step function for MAM
 .stepAllAttrMAM <- function(attr, product_structure, error_structure,
-                            data, Prod_effects, random,
+                            data, prod_effects, random,
                             reduce.random = reduce.random, 
                             alpha.random = alpha.random, 
                             alpha.fixed = alpha.fixed, 
@@ -476,7 +521,7 @@ getPureInter <- function(lsm.table, anova.table, eff){
                                                           error_structure), 
                                                  data = data, response = attr,
                                                  fixed = list(Product = 
-                                                                Prod_effects, 
+                                                                prod_effects, 
                                                               Consumer=NULL),
                                                  random = random, corr = FALSE,
                                                  MAM = TRUE,
@@ -499,7 +544,7 @@ getPureInter <- function(lsm.table, anova.table, eff){
   else
     anova.table <- suppressMessages(anova(modelMAM, type = 1))
   
-  anova.table <- .renameScalingTerm(anova.table, Prod_effects) 
+  anova.table <- .renameScalingTerm(anova.table, prod_effects) 
   
   if(calc_post_hoc){    
     model <- .createModelFromMAM(modelMAM)
@@ -549,3 +594,24 @@ getPureInter <- function(lsm.table, anova.table, eff){
 
 } 
 
+
+## copy from lme4 package
+namedList <- function(...) {
+  L <- list(...)
+  snm <- sapply(substitute(list(...)), deparse)[-1]
+  if (is.null(nm <- names(L))) nm <- snm
+  if (any(nonames <- nm == "")) nm[nonames] <- snm[nonames]
+  setNames(L,nm)
+}
+
+## function to get an element from a control list (from Stackoverflow)
+rmatch <- function(x, name) {
+  pos <- match(name, names(x))
+  if (!is.na(pos)) return(x[[pos]])
+  for (el in x) {
+    if (class(el) == "list") {
+      out <- Recall(el, name)
+      if (!is.null(out)) return(out)
+    }
+  }
+}

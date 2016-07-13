@@ -1,22 +1,22 @@
-\name{plot.consmixed}
-\alias{plot.consmixed}
+\name{plot.conjoint}
+\alias{plot.conjoint}
 
 \title{
-plots the post-hoc for the consmixed object
+plots the post-hoc for the conjoint object
 }
 \description{
 plots the least squares means and differences of least squares means 
 together with the confidence intervals for the fixed effects
 }
 \usage{
-\method{plot}{consmixed} (x, main = NULL, cex = 1.4, 
+\method{plot}{conjoint} (x, main = NULL, cex = 1.4, 
                            which.plot = c("LSMEANS", "DIFF of LSMEANS"),
-                           effs = NULL, ...)
+                           test.effs = NULL, ...)
 }
 
 \arguments{
   \item{x}{
- object of class consmixed
+ object of class conjoint
 }
 \item{main}{
  string. Title for the plots
@@ -28,7 +28,7 @@ together with the confidence intervals for the fixed effects
 \item{which.plot}{
  type of plot to be drawn
 }
-\item{effs}{
+\item{test.effs}{
  name of the effext for which to draw the plots
 }
  \item{\dots}{
@@ -48,13 +48,12 @@ Alexandra Kuznetsova
 \examples{
 
 #convert some variables to factors in Tham
-ham <- convertToFactors(ham, c("Consumer", "Product", "Information", "Gender"))
+response <- c("Liking")
+fixed <- list(Product=c("Product", "Information"), Consumer="Gender")
+random <- c("Consumer")
+facs <- c("Consumer", "Product", "Information", "Gender")
 
-res <- consmixed(response="Liking", 
-Prod_effects= c("Product","Information"), 
-Cons_effects=c("Gender","Age"), Cons = "Consumer", data =ham, structure=1)
-
-plot(res)
+res.ham <- conjoint(structure=3, ham, response, fixed, random, facs)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

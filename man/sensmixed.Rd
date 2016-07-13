@@ -4,126 +4,61 @@
 \title{Analysis of sensory data within a mixed effects model framework}
 
 \description{
-Constructs a mixed effects model for each of the selected by user attributes 
-according to the specified by the user structure arguments. If required, then
-the random structures are reduced by eliminating NS random effects.
-The likelihood ratio test (LRT) is used for testing random terms, F-type 
-hypothesis test is used for testing fixed terms
+Constructs mixed effects models for each of the selected by a user attributes. By default the largest possible models (that contain all possible interactions in fixed and random parts) are fitted. The complexity of the fitted models can be changed.  Non-significant random effects are eliminated (by default). The likelihood ratio test (LRT) is used for testing the random terms, F-type hypothesis test is used for testing the terms. The type of the model and the type of the analysis can be changed with the \code{control} argument (see \code{sensmixedControl()})
 }
 \usage{
-sensmixed(attributes=NULL, Prod_effects, replication = NULL, 
-                              individual, data, product_structure = 3, 
-                              error_structure ="No_Rep", MAM = FALSE,
-                              mult.scaling = FALSE, oneway_rand = TRUE,
-                              MAM_PER = FALSE, adjustedMAM = FALSE, 
-                              alpha_conditionalMAM = 1,
-                              calc_post_hoc = FALSE, parallel = FALSE, 
-                              reduce.random=TRUE, alpha.random = 0.1, 
-                              alpha.fixed = 0.05, interact.symbol = ":", 
-                              keep.effs = NULL,  ...)
+sensmixed(attributes, prod_effects, assessor, 
+          replication = NULL, data, product_structure = 3,
+          error_structure ="ASS-REP", MAM = TRUE,
+          control = sensmixedControl())
 }
 \arguments{
   \item{attributes}{
     
-     vector with names of sensory attributes
+    a vector with names of sensory attributes
 }
 
-\item{Prod_effects}{
+\item{prod_effects}{
     
-     names of the variables related to the product
+     a vector with the names of the variables related to the product
 }
 
 \item{replication}{
     
-     names of the replication column in the data, if present
+     a character with the name of the replication column in the data, if present
 }
 
-\item{individual}{
+\item{assessor}{
     
-    name of the column in the data that represent assessors
+    a characthe with the name of the column in the data that represents assessors
 }
 
 \item{data}{
-    
-     data frame (data from sensory studies)
+    a data frame (data from sensory studies)
 }
 
 \item{product_structure}{
-    
-    one of the values in c(1, 2, 3). 1: only main effects will enter the initial
-    biggest model. 2: main effects and 2-way interaction. 
-    3: all main effects and all possible interaction 
+    numeric, takes values in  in c(1, 2, 3). Specifies the complexity of the fixed part (product effects) of the mixed effects models for all attributes. 
+    \describe{
+      \item{product_structure = 1}{only main effects}
+      \item{product_structure = 2}{main effects and 2-way interactions}
+      \item{product_structure = 3}{all main effects and all possible interaction}
+    }
 }
-
 \item{error_structure}{
-    
-    one of the values in c("No_Rep", "2-WAY", "3-WAY"). "No_Rep" and "2-WAY" - 
-    assessor effect and all possible interactions between assessor and 
-    Product_effects. "3-WAY" - assessor and replicate effect and interaction 
-    between them and interaction between them and Product_effects
+    character, takes values in c("ONLY-ASS", "ASS-REP"). Specifies the complexity of the random part of the mixed effects models for all attributes. 
+    \describe{
+      \item{error_structure = "ONLY-ASS"}{assessor effect and all possible interactions between assessor and product effects}
+      \item{error_structure = "ASS-REP"}{assessor and replicate effect and interaction 
+    between them and interaction between them and product effects}
+    }
 }
 
 \item{MAM}{
-    
-    logical. if MAM model should be constructed (scaling correction)
+    logical. if TRUE then mixed assessor models (MAM) are fitted for the selected attributes  (see Brockhoff, P. B., Schlich, P., & Skovgaard, I. (2015))
 }
-\item{mult.scaling}{
-    
-    logical. Whether multiple scaling should be used
-}
-\item{oneway_rand}{
-    
-    logical. Whether there should be just prod effect as part of the random part in MAM
-}
-\item{MAM_PER}{
-    
-    logical. if MAManalysis function should be called (scaling correction)
-}
-\item{adjustedMAM}{
-    
-    logical. should MAM be adjusted for the scaling
-}
-\item{alpha_conditionalMAM}{
-    
-    logical. scaling should be part of the model in case its p-value 
-    is less than alpha_conditionalMAM
-}
-\item{calc_post_hoc}{
-    
-    logical. Should the post hoc analysis be performed on the final resuced 
-    models for all the attributes
-}
-\item{parallel}{
-    logical. Should the computation be done in parallel. the default is FALSE   
-}
-
-\item{reduce.random}{
-    
-     logical. Eliminate non-significant random effects according to 
-     alpha.random or not. The default is TRUE
-}
-
-\item{alpha.random}{
-    
-     significance level for elimination of the random part (for LRT test)
-}
-
-\item{alpha.fixed}{
-    
-     significance level for elimination of the fixed part (for F test)
-}
-\item{interact.symbol}{
-    
-     symbol for the indication of the interaction between effects. the default 
-     one is ":".
-}
-\item{keep.effs}{
-    
-     which effects should be kept in a model.
-}
-
-  \item{\dots}{
-     other potential arguments.
+\item{control}{
+    a list (of class \code{sensmixedControl()}) containing control parameters. See the \code{sensmixedControl()} documentation for details.
 }
 }
 
@@ -135,45 +70,66 @@ sensmixed(attributes=NULL, Prod_effects, replication = NULL,
   \item{pvalue}{matrix withp-values for all effects for the selected attributes}
   }
   
+\seealso{\link{sensmixedControl}, \link{conjoint}, \link{SensMixedUI}}
+  
 \author{
 Alexandra Kuznetsova, Per Bruun Brockhoff, Rune Haubo Bojesen Christensen
+}
+
+\references{
+Brockhoff, P. B., Schlich, P., & Skovgaard, I. (2015). Taking individual
+scaling differences into account by analyzing profile data with the mixed
+assessor model. Food Quality and Preference, 39 , 156-166.
+
+Kuznetsova, A., Christensen, R. H., Bavay, C., & Brockhoff,
+P. B. (2015). Automated mixed ANOVA modeling of sensory and consumer data. 
+Food Quality and Preference, 40,
+Part A, 31 { 38. URL: http://www.sciencedirect.com/science/
+article/pii/S0950329314001724. doi:http://dx.doi.org/10.1016/j.
+foodqual.2014.08.004.
+}
 }
 
 \examples{
 
 
-#import SensMixed package
+## import SensMixed package
 library(SensMixed)
 
-#convert some variables to factors in TVbo
+## convert some variables to factors in TVbo
 TVbo <- convertToFactors(TVbo, c("Assessor", "Repeat", "Picture"))
 
-#run automated selection process
+## run automated selection process
 res <- sensmixed(c("Coloursaturation", "Colourbalance"),
-Prod_effects = c("TVset", "Picture"), replication="Repeat", 
-individual="Assessor", data=TVbo, MAM=TRUE)
+prod_effects = c("TVset", "Picture"), 
+assessor="Assessor", data=TVbo, MAM=TRUE)
+
+res
 
 
 ## run MAManalysis function
 res_MAM <- sensmixed(c("Coloursaturation", "Colourbalance"),
-                 Prod_effects=c("TVset"), replication="Repeat", 
-                  individual="Assessor", data=TVbo, MAM_PER=TRUE)
+                 prod_effects=c("TVset"), replication="Repeat", 
+                 assessor="Assessor", data=TVbo, control = list(MAM_balanced=TRUE))
 ## print is not yet implemented
 ## get anova part
 res_MAM[[3]][,,1]
 
 ## compare with the general implementation
 res <- sensmixed(c("Coloursaturation", "Colourbalance"),
-                  Prod_effects=c("TVset"), 
-                  individual="Assessor", data=TVbo, MAM=TRUE, 
-                  reduce.random=FALSE)
+                  prod_effects=c("TVset"), 
+                  assessor="Assessor", data=TVbo, MAM=TRUE, 
+                  control = list(reduce.random=FALSE))
 res$fixed      
 
 \dontrun{
+res <- sensmixed(names(TVbo)[5:(ncol(TVbo) - 1)],
+                  prod_effects=c("TVset", "Picture"), 
+                  assessor="Assessor", 
+                  data=TVbo)
+
+
 plot F and Chi square values
-plot(result)
+plot(res)
 }
-
-
-
 }
