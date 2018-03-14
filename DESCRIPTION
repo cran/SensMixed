@@ -1,28 +1,31 @@
 Package: SensMixed
 Type: Package
 Title: Analysis of Sensory and Consumer Data in a Mixed Model Framework
-Version: 2.0-10
-Authors@R: c(person("Alexandra", "Kuznetsova", role = c("aut", "cre"),
+Version: 2.1-0
+Authors@R: c(person("Alexandra", "Kuznetsova", role = c("aut"),
                           email = "alku@dtu.dk"),
-                   person("Per", "Bruun Brockhoff", role = c("aut", "ths")),
-                   person("Rune", "Haubo Bojesen Christensen", role = "aut"))
-Maintainer: Alexandra Kuznetsova <alku@dtu.dk>
-Depends: R (>= 3.0.0), stats, methods, lmerTest
+                   person("Per", "Bruun Brockhoff", role = c("aut", "ths", "cre"),
+                   email = "perbb@dtu.dk"),
+                   person("Rune", "Haubo Bojesen Christensen", 
+                   role = c("aut"),
+                   email = "Rune@ChristensenStatistics.dk"))
+Depends: R (>= 3.0.0), stats, methods
 Imports: Hmisc, plyr, doBy, xtable, reshape2, ggplot2, shiny, shinyBS,
-        lme4 (>= 1.1)
-Suggests: pbkrtest, parallel
+        lme4 (>= 1.1), MASS
+Suggests: pbkrtest, parallel, estimability
 Description: Functions that facilitate analysis of 
               Sensory as well as Consumer data within a mixed effects model 
               framework. The so-called mixed assessor models, 
               that correct for the scaling effect are implemented.
               The generation of the d-tilde plots forms part of the package.
-              The shiny application provides GUI for the functionalities.
+              The shiny application provides a GUI for the functionalities.
 LazyData: TRUE
 License: GPL (>= 2)
-Repository: CRAN
 NeedsCompilation: no
-Packaged: 2016-07-13 10:00:13 UTC; alku
-Author: Alexandra Kuznetsova [aut, cre],
-  Per Bruun Brockhoff [aut, ths],
+Packaged: 2018-03-13 07:33:05 UTC; rhbc
+Author: Alexandra Kuznetsova [aut],
+  Per Bruun Brockhoff [aut, ths, cre],
   Rune Haubo Bojesen Christensen [aut]
-Date/Publication: 2016-07-13 16:21:31
+Maintainer: Per Bruun Brockhoff <perbb@dtu.dk>
+Repository: CRAN
+Date/Publication: 2018-03-14 10:35:48 UTC

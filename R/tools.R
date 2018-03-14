@@ -192,7 +192,7 @@ createLMERmodelConjoint <- function(structure, data, response, fixed, random, co
   }
   else{
     ## suppressMessages(model <- eval(substitute(lmer( mf.final, control=lmerControl(check.nobs.vs.rankZ = "ignore")),list( mf.final= mf.final))))
-    model <- lmerTest::lmer(mf.final, data) 
+    model <- lmer(mf.final, data) 
     return(model)
   }
 }
@@ -253,11 +253,11 @@ createLMERmodel <- function(structure, data, response, fixed, random, corr,
                                      oneway_rand = oneway_rand)
     
     ## for anova
-    modelMAM <- lmerTest::lmer(fo$fo.anova, fo$data)
+    modelMAM <- lmer(fo$fo.anova, fo$data)
 
     return(modelMAM = modelMAM)   
   }else{
-    model <- lmerTest::lmer(mf.final, data) 
+    model <- lmer(mf.final, data) 
     return(model)
   }
     

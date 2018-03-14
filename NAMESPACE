@@ -1,5 +1,10 @@
-import(lmerTest)
-importFrom(lme4, VarCorr, fixef, isGLMM, isLMM, getME)
+importFrom("stats", "complete.cases", "drop1", "getCall", "logLik",
+             "pchisq", "vcov")
+importFrom("utils", "as.roman", "data")
+
+importFrom(MASS, ginv)
+
+importFrom(lme4, VarCorr, fixef, isGLMM, isLMM, getME, lmerControl)
 if(getRversion() >= "3.3.0") {
     importFrom("stats", sigma)
 }else{
